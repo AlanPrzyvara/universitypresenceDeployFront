@@ -14,7 +14,7 @@ const Login: React.FC = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${apiUrl}http://localhost:3000/users/sign_in`, {
+            const response = await fetch(`${apiUrl}/users/sign_in`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
