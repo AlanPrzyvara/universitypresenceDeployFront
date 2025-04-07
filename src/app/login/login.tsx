@@ -8,12 +8,13 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:3000/users/sign_in', {
+            const response = await fetch(`${apiUrl}http://localhost:3000/users/sign_in`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
