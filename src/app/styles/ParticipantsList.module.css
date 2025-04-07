@@ -1,0 +1,29 @@
+.participantsContainer {
+    max-height: 700px;
+    /* Limite de altura para ativar o scroll */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    margin: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+}
+
+/* Esconde a barra de rolagem */
+.participantsContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.participantsContainer {
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.participantCard {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
