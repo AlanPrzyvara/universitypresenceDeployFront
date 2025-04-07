@@ -180,7 +180,8 @@ const CreateEventPage: React.FC = () => {
                             (e.target as any).showPicker();
                         }
                     }}
-                    className={styles.input}
+                    className={styles.inputDateTime}
+                    // className={styles.input}
                     required
                 />
                 <p className={styles.namefield}>Data e hora final:</p>
@@ -194,7 +195,8 @@ const CreateEventPage: React.FC = () => {
                             (e.target as any).showPicker();
                         }
                     }}
-                    className={styles.input}
+                    className={styles.inputDateTime}
+                    // className={styles.input}
                     required
                 />
                 <p className={styles.namefield}>Local:</p>
