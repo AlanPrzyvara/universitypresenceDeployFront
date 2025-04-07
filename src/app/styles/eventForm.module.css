@@ -69,7 +69,7 @@
     color: #333;
 }
 
-.input::placeholder {
+.inputDateTime::placeholder {
     color: #222;
 }
 

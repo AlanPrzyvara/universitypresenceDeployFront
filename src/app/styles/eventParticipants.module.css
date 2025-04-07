@@ -103,12 +103,24 @@
     font-weight: 600;
     font-size: 1rem;
     z-index: 9999;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     animation: fadeOut 2s forwards;
 }
 
 @keyframes fadeOut {
-    0% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.errorMessage {
+    color: red;
 }

@@ -44,6 +44,8 @@ const EventDetails: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [ra, setRa] = useState('');
     const [presenceConfirmed, setPresenceConfirmed] = useState(false);
+    const [apiMessage, setApiMessage] = useState<string | null>(null);
+    const [apiMessageType, setApiMessageType] = useState<'success' | 'error' | null>(null);
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -94,7 +96,7 @@ const EventDetails: React.FC = () => {
         };
 
         try {
-            await fetch(`${apiUrl}/participants/${event_id}/confirm_presence`, {
+            const response = await fetch(`${apiUrl}/participants/${event_id}/confirm_presence`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -102,12 +104,23 @@ const EventDetails: React.FC = () => {
                 body: JSON.stringify(payload),
             });
 
-            setPresenceConfirmed(true);
-            setIsModalOpen(false);
+            if (response.status === 200) {
+                setPresenceConfirmed(true);
+                setApiMessage('Presença confirmada com sucesso!');
+                setApiMessageType('success');
+                setIsModalOpen(false);
 
-            setTimeout(() => {
-                setPresenceConfirmed(false);
-            }, 2000);
+                setTimeout(() => {
+                    setPresenceConfirmed(false);
+                    setApiMessage(null);
+                    setApiMessageType(null);
+                }, 2000);
+            } else if (response.status === 422) {
+                setApiMessage('Você está fora da área do evento');
+                setApiMessageType('error');
+            } else {
+                throw new Error('Erro inesperado');
+            }
         } catch (err) {
             console.error(err); // evita eslint error
             setError('Ocorreu um erro ao confirmar sua presença.');
@@ -117,61 +130,60 @@ const EventDetails: React.FC = () => {
     return (    
         <>
             <div className={EventParticipants.card}>
-            <EventCard 
-                name={eventAttributes.name}
-                eventStart={eventAttributes.event_start}
-                eventEnd={eventAttributes.event_end}
-                course={courseAttributes?.name || ''}
-                location={`${eventAttributes.location.amenity}, ${eventAttributes.location.road}, ${eventAttributes.location.town}, ${eventAttributes.location.state}, ${eventAttributes.location.postcode}`}
-                description={eventAttributes.description}
-            />
+                <EventCard 
+                    name={eventAttributes.name}
+                    eventStart={eventAttributes.event_start}
+                    eventEnd={eventAttributes.event_end}
+                    course={courseAttributes?.name || ''}
+                    location={`${eventAttributes.location.amenity}, ${eventAttributes.location.road}, ${eventAttributes.location.town}, ${eventAttributes.location.state}, ${eventAttributes.location.postcode}`}
+                    description={eventAttributes.description}
+                />
             </div>
             <div className={`${EventParticipants.confirmButtonContainer} ${urbanist.className}`}>
-            <button 
-                className={`${EventParticipants.confirmButton} ${urbanist.className}`} 
-                onClick={handleLocationAndOpenModal}
-                disabled={!coords}
-            >
-                Confirmar Presença
-            </button>
+                <button 
+                    className={`${EventParticipants.confirmButton} ${urbanist.className}`} 
+                    onClick={handleLocationAndOpenModal}
+                    disabled={!coords}
+                >
+                    Confirmar Presença
+                </button>
             </div>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-            <div className={EventParticipants.modalContent}>
-                {presenceConfirmed ? (
-                <p className={EventParticipants.successMessage}>
-                    Presença confirmada com sucesso!
-                </p>
-                ) : (
-                <form className={EventParticipants.formContainer} onSubmit={handleSubmit}>
-                    <h1>Insira seu R.A. para confirmar sua presença</h1>
-                    <input 
-                    type="text" 
-                    placeholder='R.A.' 
-                    value={ra}
-                    onChange={(e) => setRa(e.target.value)}
-                    />
-                    <button 
-                    type="submit"
-                    className={`${EventParticipants.conteinerConfirmButton} ${urbanist.className}`} 
-                    disabled={!coords || !ra}
-                    >
-                    Confirmar Presença
-                    </button>
-                    {error && (
-                    <p className={EventParticipants.errorMessage}>
-                        {error}
-                    </p>
+                <div className={EventParticipants.modalContent}>
+                    {presenceConfirmed ? (
+                        <p className={EventParticipants.successMessage}>
+                            Presença confirmada com sucesso!
+                        </p>
+                    ) : (
+                        <form className={EventParticipants.formContainer} onSubmit={handleSubmit}>
+                            <h1>Insira seu R.A. para confirmar sua presença</h1>
+                            <input 
+                                type="text" 
+                                placeholder='R.A.' 
+                                value={ra}
+                                onChange={(e) => setRa(e.target.value)}
+                            />
+                            <button 
+                                type="submit"
+                                className={`${EventParticipants.conteinerConfirmButton} ${urbanist.className}`} 
+                                disabled={!coords || !ra}
+                            >
+                                Confirmar Presença
+                            </button>
+                        </form>
                     )}
-                </form>
-                )}
-            </div>
+                </div>
             </Modal>
 
-            {presenceConfirmed && (
-            <div className={EventParticipants.toastMessage}>
-                Presença confirmada com sucesso!
-            </div>
+            {apiMessage && (
+                <div 
+                    className={`${EventParticipants.toastMessage} ${
+                        apiMessageType === 'error' ? EventParticipants.errorMessage : ''
+                    }`}
+                >
+                    {apiMessage}
+                </div>
             )}
         </>
     );
