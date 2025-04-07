@@ -46,6 +46,7 @@
 
 .input,
 .textarea,
+.inputDateTime,
 .select {
     width: 100%;
     padding: 12px 14px;
@@ -61,7 +62,8 @@
 
 .input:focus,
 .textarea:focus,
-.select:focus {
+.select:focus,
+.inputDateTime {
     background-color: #383838;
     color: #fff;
     border-color: #4CAF50;
@@ -148,6 +150,7 @@
     }
 
     .input,
+    .inputDateTime,
     .textarea,
     .select {
         font-size: 12px;
