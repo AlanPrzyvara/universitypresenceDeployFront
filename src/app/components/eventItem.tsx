@@ -7,7 +7,6 @@ interface EventItemProps {
     description: string;
     location: string;
     eventStart: string;
-    eventEnd: string;
     onViewDetails: (id: string) => void;
 }
 
@@ -15,7 +14,7 @@ const truncateDescription = (text: string, maxLength: number): string => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
-const EventItem: React.FC<EventItemProps> = ({ id, name, description, location, eventStart, eventEnd, onViewDetails }) => {
+const EventItem: React.FC<EventItemProps> = ({ id, name, description, location, eventStart, onViewDetails }) => {
     return (
         <div className={styles.eventItemWrapper}>
             <div className={styles.card}>
@@ -46,6 +45,5 @@ const EventItem: React.FC<EventItemProps> = ({ id, name, description, location, 
         </div>
     );
 };
-
 
 export default EventItem;

@@ -14,9 +14,35 @@ import ParticipantsPresence from '../../../components/ParticipantsPresence';
 
 const urbanist = Urbanist({ subsets: ['latin'] });
 
+type EventData = {
+    data: {
+        attributes: {
+            name: string;
+            event_start: string;
+            event_end: string;
+            description: string;
+            location: {
+                amenity: string;
+                road: string;
+                town: string;
+                state: string;
+                postcode: string;
+            };
+        };
+    };
+    included?: {
+        attributes: {
+            name: string;
+        };
+    }[];
+    meta?: {
+        presence_url?: string;
+    };
+};
+
 const EventShow: React.FC = () => {
     const { event_id } = useParams();
-    const [event, setEvent] = useState<any | null>(null);
+    const [event, setEvent] = useState<EventData | null>(null);
     const [presenceUrl, setPresenceUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -39,6 +65,7 @@ const EventShow: React.FC = () => {
                 setEvent(response.data);
                 setPresenceUrl(response.data.meta?.presence_url || null);
             } catch (err) {
+                console.error(err); // Agora o ESLint não reclama
                 setError('Erro ao carregar detalhes do evento.');
             } finally {
                 setLoading(false);
@@ -56,56 +83,60 @@ const EventShow: React.FC = () => {
         return <p>{error}</p>;
     }
 
+    if (!event) {
+        return <p>Evento não encontrado.</p>;
+    }
+
     const eventAttributes = event.data.attributes;
     const courseAttributes = event.included?.[0]?.attributes;
 
-    return (    
+    return (
         <>
-        <div className={`${styles.container} ${urbanist.className}`}>
-            <div className={styles.titleContainer}>
-                <button className={styles.button} onClick={() => router.push('/admin/event')}>
-                    <img src="/angle-left.svg" alt="Back Arrow" className={styles.arrowIcon} />
-                </button>
-                <h1 className={styles.title}>{eventAttributes.name}</h1>
-            </div>
-            <Divider />
-            <div className={styles.eventCard}>
-                <div className={styles.eventInfo}>
-                    <EventCard 
-                        name={eventAttributes.name}
-                        eventStart={eventAttributes.event_start}
-                        eventEnd={eventAttributes.event_end}
-                        course={courseAttributes?.name}
-                        location={`${eventAttributes.location.amenity}, ${eventAttributes.location.road}, ${eventAttributes.location.town}, ${eventAttributes.location.state}, ${eventAttributes.location.postcode}`}
-                        description={eventAttributes.description}
-                    />
+            <div className={`${styles.container} ${urbanist.className}`}>
+                <div className={styles.titleContainer}>
+                    <button className={styles.button} onClick={() => router.push('/admin/event')}>
+                        <img src="/angle-left.svg" alt="Back Arrow" className={styles.arrowIcon} />
+                    </button>
+                    <h1 className={styles.title}>{eventAttributes.name}</h1>
                 </div>
-                {presenceUrl && (
-                    <div className={styles.qrCodeContainer}>
-                        <h2 className={styles.qrCodeTitle}>QR Code para Presença:</h2>
-                        <QRCode value={presenceUrl} onClick={openQrCodeModal} style={{ cursor: 'pointer' }} />
+                <Divider />
+                <div className={styles.eventCard}>
+                    <div className={styles.eventInfo}>
+                        <EventCard
+                            name={eventAttributes.name}
+                            eventStart={eventAttributes.event_start}
+                            eventEnd={eventAttributes.event_end}
+                            course={courseAttributes?.name || ''}
+                            location={`${eventAttributes.location.amenity}, ${eventAttributes.location.road}, ${eventAttributes.location.town}, ${eventAttributes.location.state}, ${eventAttributes.location.postcode}`}
+                            description={eventAttributes.description}
+                        />
                     </div>
-                )}
-                <div className={styles.participantsList}>
-                    <h2 className={styles.participantTitle}>Participantes do Evento</h2>
-                    {event_id && <ParticipantsPresence eventId={event_id as string} />}
+                    {presenceUrl && (
+                        <div className={styles.qrCodeContainer}>
+                            <h2 className={styles.qrCodeTitle}>QR Code para Presença:</h2>
+                            <QRCode value={presenceUrl} onClick={openQrCodeModal} style={{ cursor: 'pointer' }} />
+                        </div>
+                    )}
+                    <div className={styles.participantsList}>
+                        <h2 className={styles.participantTitle}>Participantes do Evento</h2>
+                        {event_id && <ParticipantsPresence eventId={event_id as string} />}
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <ReactModal
-            isOpen={isQrCodeModalOpen}
-            onRequestClose={closeQrCodeModal}
-            className={styles.fullscreenModal}
-            overlayClassName={styles.overlay}
-        >
-            <div className={styles.modalHeader}>
-                <button className={styles.closeButton} onClick={closeQrCodeModal}>Fechar</button>
-            </div>
-            <div className={styles.qrCodeFullscreenContainer}>
-                <QRCode value={presenceUrl || ''} size={512} />
-            </div>
-        </ReactModal>
+            <ReactModal
+                isOpen={isQrCodeModalOpen}
+                onRequestClose={closeQrCodeModal}
+                className={styles.fullscreenModal}
+                overlayClassName={styles.overlay}
+            >
+                <div className={styles.modalHeader}>
+                    <button className={styles.closeButton} onClick={closeQrCodeModal}>Fechar</button>
+                </div>
+                <div className={styles.qrCodeFullscreenContainer}>
+                    <QRCode value={presenceUrl || ''} size={512} />
+                </div>
+            </ReactModal>
         </>
     );
 };

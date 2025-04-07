@@ -177,7 +177,7 @@ const CreateEventPage: React.FC = () => {
                     onChange={handleChange}
                     onFocus={(e) => {
                         if ('showPicker' in e.target) {
-                            (e.target as any).showPicker();
+                            (e.target as HTMLInputElement).showPicker();
                         }
                     }}
                     className={styles.inputDateTime}
@@ -192,7 +192,7 @@ const CreateEventPage: React.FC = () => {
                     onChange={handleChange}
                     onFocus={(e) => {
                         if ('showPicker' in e.target) {
-                            (e.target as any).showPicker();
+                            (e.target as HTMLInputElement).showPicker();
                         }
                     }}
                     className={styles.inputDateTime}

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -11,9 +11,24 @@ import { useRouter } from 'next/navigation';
 
 const urbanist = Urbanist({ subsets: ['latin'] });
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+type Event = {
+    id: string;
+    attributes: {
+        id: string;
+        name: string;
+        description: string;
+        event_start: string;
+        event_end: string;
+        location: {
+            amenity: string;
+        };
+    };
+};
+
 const EventList: React.FC = () => {
     const router = useRouter();
-    const [events, setEvents] = useState<any[]>([]);
+    const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +43,7 @@ const EventList: React.FC = () => {
                 });
                 setEvents(response.data.data);
             } catch (err) {
+                console.error(err); // agora o ESLint não reclama
                 setError('Erro ao carregar eventos.');
             } finally {
                 setLoading(false);
@@ -57,7 +73,7 @@ const EventList: React.FC = () => {
                         name={event.attributes.name}
                         description={event.attributes.description}
                         eventStart={event.attributes.event_start}
-                        eventEnd={event.attributes.event_end}
+                        // eventEnd={event.attributes.event_end}
                         location={event.attributes.location.amenity}
                         onViewDetails={(id) => router.push(`/admin/event/${id}`)}
                     />

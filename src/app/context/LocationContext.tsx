@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
@@ -39,6 +39,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         });
       },
       (error) => {
+        console.error(error); // uso do parâmetro para evitar erro do ESLint
         alert("Permita acesso à localização para continuar");
       }
     );
